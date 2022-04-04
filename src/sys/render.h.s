@@ -1,0 +1,1 @@
+.globl ren_do_it_for_all

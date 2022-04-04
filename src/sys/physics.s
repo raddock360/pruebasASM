@@ -34,14 +34,14 @@ p_not_pressed:
         ld      hl, #Key_Q                ; HL = Tecla Q
         call    cpct_isKeyPressed_asm     ; ¿ Ha sido pulsada ?
         jr      z, q_not_pressed          ; En caso negativo, saltamos a la siguiente tecla
-                ld      entity_vy(ix), #2 ; VY = 1 (Velocidad Y)
+                ld      entity_vy(ix), #-3 ; VY = 1 (Velocidad Y)
 
 ;; Comprobamos la tecla A
 q_not_pressed:
         ld      hl, #Key_A                ; HL = Tecla A
         call    cpct_isKeyPressed_asm     ; ¿Ha sido pulsada?
         jr      z, a_not_pressed
-                ld      entity_vy(ix), #-2 ; VY = -2 (velocidad Y)
+                ld      entity_vy(ix), #3 ; VY = -2 (velocidad Y)
 
 a_not_pressed:
 
@@ -53,70 +53,42 @@ a_not_pressed:
 ;; INPUT: IX -> Puntero a la entidad
 ;;
 pysx_update_one_entity:
-;; Comprobamos si hemos llegado al border derecho. En caso afirmativo
-;; reseteamos la VX a cero para que el personaje no siga avanzando.
-rightBorder:
-        ld      a, entity_x(ix)           ; A = posición X de la entidad
-        cp      #RIGHT_BORDER             ; if A > RIGHT_BORDER 
-        jr      nz, leftBorder            ; else goto leftBorder 
-                ld      a, entity_vx(ix)
-                neg
-                ld      entity_vx(ix), a
-                jr      upperBorder
-
-;; Comprobamos si hemos llegado al borde izquierdo.
-leftBorder:
-        cp      #LEFT_BORDER
-        jr      nz, upperBorder 
-                ld      a, entity_vx(ix)
-                neg
-                ld      entity_vx(ix), a
-        
-;; Comprobamos si hemos llegado al borde superior
-upperBorder:
+        ld      a, entity_x(ix)         ; Sumamos la velocidad a la posición de 
+        add     entity_vx(ix)           ; la entidad y lo almacenamos en B
+        ld      b, a                    ; \
+;; Comprobamos si hemos llegado al borde derecho
+        ld      a, #RIGHT_BORDER        ; A = borde derecho
+        sub     entity_w(ix)            ; A -= ancho de la entidad
+        cp      b                       ; Si hemos llegado, detectamos colisión
+        jr      c, x_collision          ; \
+;; Comprobamos el borde izquierdo
+        ld      a, #LEFT_BORDER         ; A = borde izquierdo
+        cp      b                       ; Si hemos llegado al borde izquierdo
+        jr      nc, x_collision         ; detectamos colisión
+x_no_collision:
+        ld      entity_x(ix), b
+x_collision:
+;; Comprobamos eje Y
         ld      a, entity_y(ix)
-        cp      #upperBorder
-        jr      c, lowerBorder
-                ld      entity_vy(ix), #0
-                jr      finish
-;; Comprobamos si hemos llegado al borde inferior
-lowerBorder:
-        cp      #LOWER_BORDER
-        jr      nc, finish
-                ld      entity_vy(ix), #0
-;; Sumamos las velocidades resultantes y regresamos
-finish:
         add     entity_vy(ix)
-        ld      entity_y(ix), a
-        ld      a, entity_x(ix)
-        add     entity_vx(ix)
-        ld      entity_x(ix), a
+        ld      b, a
+;; Comprobamos borde inferior
+        ld      a, #LOWER_BORDER
+        sub     entity_h(ix)
+        cp      b
+        jr      c, y_collision
+;; Comprobamos el borde superior
+        ld      a, #UPPER_BORDER
+        cp      b
+        jr      nc, y_collision
+y_no_collision:
+        ld      entity_y(ix), b
+y_collision:
+        ld      entity_vx(ix), #0
+        ld      entity_vy(ix), #0
 
         ret
-
-;;
-;; Comprueba si hay colisiones entre dos entidades.
-;; INPUT: IX -> Puntero a la entidad 1
-;;        IY -> Puntero a la entidad 2
-;;
-pysx_check_collisions_pairs_of_entities::
-        ld      a, entity_x(ix)
-        add     entity_w(ix)
-        cp      entity_x(iy)
-        jr      nz, no_collision
-                ld      a, entity_x(iy)
-                add     entity_w(iy)
-                cp      entity_x(ix)
-                jr      nz, no_collision
-there_is_collision:
-        ld      hl, #0xC000
-        ld      (hl), #0xFF
-        inc     hl
-        ld      (hl), #0xFF
-
-no_collision:
-
-        ret
+        
 
 ;;
 ;; Actualiza las físicas de todas las entidades

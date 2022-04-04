@@ -6,12 +6,13 @@
 ;; libre y el contador de entidades creadas. Definida en manager.h.s
 DefineEntityVector man_entity_vector, man_max_entities
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve el puntero a la siguiente entidad libre, incrementa el 
 ;; contador de entidades creadas e incrementa el puntero a la siguiente entidad
 ;; libre.
-;; DEVUELVE: DE -> puntero a la entidad reservada
-;; DESTRUYE: DE, HL
+;; INPUT:
+;; OUTPUT: DE -> puntero a la entidad reservada
+;; DESTROY: DE, HL
 ;;
 man_create_entity::
         ld      de, (man_next_free_entity)
@@ -23,40 +24,48 @@ man_create_entity::
         
         ret
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Copia una plantilla de entidad en el espacio reservado de una nueva entidad.
-;; RECIBE: HL -> Bytes de inicialización de la entidad a copiar
+;; INPUT : HL -> Bytes de inicialización de la entidad a copiar
 ;;         DE -> Puntero a la entidad vacía
 ;;         BC -> Tamaño de la entidad (en bytes)
+;; OUPUT:
+;; DESTROY: BC, DE, HL
 ;;
 man_init_entity::
         ldir
 
         ret
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve el número de entidades creadas 
-;; DEVUELVE: A -> Número de entidades creadas
+;; INPUT:
+;; OUTPUT: A -> Número de entidades creadas
+;; DESTROY: A
 ;;
 man_get_created_entities::
         ld      a, (man_created_entities)
 
         ret
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve en DE el puntero al vector de entidades
+;; INPUT:
+;; OUTPUT: DE -> puntero al vector de entidades
+;; DESTROY: DE
 ;;
 man_get_entityVector::
         ld      de, #man_entity_vector
 
         ret
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Recorre el vector aplicando la rutina recibida en HL a todas las entidades que
 ;; tengan activo el bit de estado recibido en A
 ;; INPUT: HL -> Puntero a la rutina
 ;;         A -> Bit de estado
 ;; OUTPUT:
+;; DESTROY AF, BC, DE, HL
 ;;
 man_do_it_for_all_matching::
         ld      ix, #man_entity_vector     ; IX -> Puntero al inicio del vector de entidades

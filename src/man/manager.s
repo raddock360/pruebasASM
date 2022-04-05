@@ -40,8 +40,8 @@ man_init_entity::
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Devuelve el número de entidades creadas 
 ;; INPUT:
-;; OUTPUT: A -> Número de entidades creadas
-;; DESTROY: A
+;; OUTPUT: B -> Número de entidades creadas
+;; DESTROY: B
 ;;
 man_get_created_entities::
         ld      a, (man_created_entities)

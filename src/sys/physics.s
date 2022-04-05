@@ -47,7 +47,24 @@ a_not_pressed:
 
         ret
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Comprueba si la entidad jugador colisiona con alguna entidad enemiga o 
+;; elemento colisionable.
+;; INPUT: 
+;; OUTPUT:
+;; DESTROY:
 ;;
+pysx_check_collisions:
+;; Apuntamos IX a la entidad del jugador (la primera del vector)
+;; Apuntamos IY a la segunda entidad del vector
+        ld      ix, #man_entity_vector   ; IX = puntero a la primera entidad del vector
+        ld      iy, ix                   ; IY = Segunda entidad del vector
+        inc     iy                       ; \
+        call    man_get_created_entities ; Obtenemos el número de entidades en el vector
+comprobar_colisiones:
+        ;; TODO        
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Actualiza las físicas de una entidad. Para ello, comprueba que no ha llegado a 
 ;; los límites de la pantalla. Si ha llegado, no permite el paso.
 ;; INPUT: IX -> Puntero a la entidad

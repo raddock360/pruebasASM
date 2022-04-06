@@ -54,15 +54,36 @@ a_not_pressed:
 ;; OUTPUT:
 ;; DESTROY:
 ;;
-pysx_check_collisions:
+pysx_check_collisions::
 ;; Apuntamos IX a la entidad del jugador (la primera del vector)
 ;; Apuntamos IY a la segunda entidad del vector
         ld      ix, #man_entity_vector   ; IX = puntero a la primera entidad del vector
-        ld      iy, ix                   ; IY = Segunda entidad del vector
-        inc     iy                       ; \
+        ld      iy, #man_entity_vector   ; IY = Segunda entidad del vector
+        ld      de, #ent_size            ; |
+        add     iy, de                   ; \
+        ld      hl, #0xC000              ; Puntero a la memoria de vídeo para pintar un píxel rojo si hay colisión
         call    man_get_created_entities ; Obtenemos el número de entidades en el vector
+        dec     b                        ; y lo decrementamos en uno para la cuenta
 comprobar_colisiones:
-        ;; TODO        
+        ld      a, entity_y(iy)          ; A = posición Y de la esquina sup-izda de la entidad enemiga
+        add     entity_h(iy)             ; A += entity_h. Sumamos la altura para calcular donde empieza la parte inferior de la entidad
+        cp      entity_y(ix)             ; Si entity_y <= A (enemy_y + enemy_height)
+        jr      c, no_collision          ; Si no, pasamos a la siguiente entidad
+possible_y_collision:
+                ld      a, entity_y(ix)  ; A = posición Y de la esquina sup-izda del personaje
+                add     entity_h(ix)     ; A += entity_h
+                cp      entity_y(iy)     ; Si A <= enemy_y + enemy_h hay colisión
+                jr      c, no_collision  ; Si no, no la hay
+there_is_y_collision:
+                        ld      (hl), #0xFF
+                        jr      next_entity
+no_collision:
+        ld      (hl), #0x00
+next_entity:
+        dec     b
+        ret     z 
+        add     iy, de 
+        jr      comprobar_colisiones
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Actualiza las físicas de una entidad. Para ello, comprueba que no ha llegado a 
@@ -115,5 +136,6 @@ pysx_update_all_entities::
         ld      hl, #pysx_update_one_entity
         ld       a, #PHYSICS
         call    man_do_it_for_all_matching
+        call    pysx_check_collisions
 
         ret

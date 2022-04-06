@@ -1,4 +1,5 @@
 .globl pysx_update_all_entities
+.globl pysx_check_collisions ; La hago global para debuggear
 
 
 ;; Constantes para definir los límites de la pantalla

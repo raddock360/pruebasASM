@@ -45,7 +45,8 @@ man_init_entity::
 ;;
 man_get_created_entities::
         ld      a, (man_created_entities)
-
+        ld      b, a
+        
         ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

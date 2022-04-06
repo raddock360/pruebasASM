@@ -3,6 +3,8 @@
 .globl man_entity_vector ;; Solo para debuggear, luego quitar
 .globl man_do_it_for_all_matching
 .globl man_get_entityVector
+.globl man_get_created_entities
+
 ;;
 ;; Número máximo de entidades en juego
 ;;

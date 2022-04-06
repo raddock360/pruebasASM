@@ -16,5 +16,5 @@ DefineEntity ent_player,       ^/(JUGADOR | RENDER | PHYSICS | CONTROLS)/, 0x28,
 ;; 
 ;; Enemigo 
 ;;
-DefineEntity ent_enemy,        ^/(ENEMIGO | RENDER | PHYSICS)/,            0x28, 0x0A, 0x00, 0x00, 0x04, 0x10, 0xF0, 0xFFFF
+DefineEntity ent_enemy,        ^/(ENEMIGO | RENDER | PHYSICS)/,            0x28, 0x20, 0x00, 0x00, 0x04, 0x10, 0xF0, 0xFFFF
         

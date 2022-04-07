@@ -58,17 +58,19 @@ pysx_check_collisions::
 ;; Apuntamos IX a la entidad del jugador (la primera del vector)
 ;; Apuntamos IY a la segunda entidad del vector
         ld      ix, #man_entity_vector   ; IX = puntero a la primera entidad del vector
-        ld      iy, #man_entity_vector   ; IY = Segunda entidad del vector
-        ld      de, #ent_size            ; |
-        add     iy, de                   ; \
+        ld      iy, #man_entity_vector   ; IY = puntero a la primera entidad del vector
+        ld      de, #ent_size            ; DE = tamaño de una entidad en bytes
+        add     iy, de                   ; IY += DE (sumamos DE a IY para avanzar el puntero hasta la segunda entidad)
         ld      hl, #0xC000              ; Puntero a la memoria de vídeo para pintar un píxel rojo si hay colisión
         call    man_get_created_entities ; Obtenemos el número de entidades en el vector
         dec     b                        ; y lo decrementamos en uno para la cuenta
 comprobar_colisiones:
         ld      a, entity_y(iy)          ; A = posición Y de la esquina sup-izda de la entidad enemiga
         add     entity_h(iy)             ; A += entity_h. Sumamos la altura para calcular donde empieza la parte inferior de la entidad
-        cp      entity_y(ix)             ; Si entity_y <= A (enemy_y + enemy_height)
-        jr      c, no_collision          ; Si no, pasamos a la siguiente entidad
+        ld      c, a                     ; B = A (pasamos el valor de A a B)
+        ld      a, entity_y(ix)          ; A = posición Y de la esquina sup-izda del jugador
+        cp      c                        ; 
+        jr      nc, no_collision         ; Si no, pasamos a la siguiente entidad
 possible_y_collision:
                 ld      a, entity_y(ix)  ; A = posición Y de la esquina sup-izda del personaje
                 add     entity_h(ix)     ; A += entity_h

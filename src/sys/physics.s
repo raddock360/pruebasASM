@@ -61,7 +61,6 @@ pysx_check_collisions::
         ld      iy, #man_entity_vector   ; IY = puntero a la primera entidad del vector
         ld      de, #ent_size            ; DE = tamaño de una entidad en bytes
         add     iy, de                   ; IY += DE (sumamos DE a IY para avanzar el puntero hasta la segunda entidad)
-        ld      hl, #0xC000              ; Puntero a la memoria de vídeo para pintar un píxel rojo si hay colisión
         call    man_get_created_entities ; Obtenemos el número de entidades en el vector
         dec     b                        ; y lo decrementamos en uno para la cuenta
 comprobar_colisiones:
@@ -70,17 +69,27 @@ comprobar_colisiones:
         ld      c, a                     ; B = A (pasamos el valor de A a B)
         ld      a, entity_y(ix)          ; A = posición Y de la esquina sup-izda del jugador
         cp      c                        ; 
-        jr      nc, no_collision         ; Si no, pasamos a la siguiente entidad
+        jr      nc, next_entity          ; Si no, pasamos a la siguiente entidad
 possible_y_collision:
-                ld      a, entity_y(ix)  ; A = posición Y de la esquina sup-izda del personaje
-                add     entity_h(ix)     ; A += entity_h
-                cp      entity_y(iy)     ; Si A <= enemy_y + enemy_h hay colisión
-                jr      c, no_collision  ; Si no, no la hay
+        ld      a, entity_y(ix)          ; A = posición Y de la esquina sup-izda del personaje
+        add     entity_h(ix)             ; A += entity_h
+        cp      entity_y(iy)             ; Si A <= enemy_y + enemy_h hay colisión
+        jr      c, next_entity           ; Si no, no la hay
 there_is_y_collision:
-                        ld      (hl), #0xFF
-                        jr      next_entity
-no_collision:
-        ld      (hl), #0x00
+        ld      a, entity_x(iy)
+        add     entity_w(iy)
+        ld      c, a
+        ld      a, entity_x(ix)
+        cp      c
+        jr      nc, next_entity
+is_there_x_collision:
+        ld      a, entity_x(ix)
+        add     entity_w(ix)
+        cp      entity_x(iy)
+        jr      c, next_entity
+collision_confirmed:
+                ld      entity_vx(ix), #0
+                ld      entity_vy(ix), #0
 next_entity:
         dec     b
         ret     z 
@@ -105,9 +114,12 @@ pysx_update_one_entity:
         ld      a, #LEFT_BORDER         ; A = borde izquierdo
         cp      b                       ; Si hemos llegado al borde izquierdo
         jr      nc, x_collision         ; detectamos colisión
-x_no_collision:
-        ld      entity_x(ix), b
+        jr      no_x_collision
 x_collision:
+        ld      a, entity_vx(ix)
+        neg 
+        ld      entity_vx(ix), a
+no_x_collision:
 ;; Comprobamos eje Y
         ld      a, entity_y(ix)
         add     entity_vy(ix)
@@ -121,14 +133,23 @@ x_collision:
         ld      a, #UPPER_BORDER
         cp      b
         jr      nc, y_collision
-y_no_collision:
-        ld      entity_y(ix), b
+        jr      no_y_collision
 y_collision:
-        ld      entity_vx(ix), #0
-        ld      entity_vy(ix), #0
-
-        ret
+        ld      a, entity_vy(ix)
+        neg
+        ld      entity_vy(ix), a
+        ;;ld      entity_vx(ix), #0
+        ;;ld      entity_vy(ix), #0
+no_y_collision:
+        ld      a, entity_x(ix)         ; Sumamos la velocidad a la posición de 
+        add     entity_vx(ix)           ; la entidad y lo almacenamos en B
+        ld      entity_x(ix), a
+        ld      a, entity_y(ix)         ; Sumamos la velocidad a la posición de 
+        add     entity_vy(ix)           ; la entidad y lo almacenamos en B
+        ld      entity_y(ix), a
         
+        ret     
+
 
 ;;
 ;; Actualiza las físicas de todas las entidades
@@ -138,6 +159,5 @@ pysx_update_all_entities::
         ld      hl, #pysx_update_one_entity
         ld       a, #PHYSICS
         call    man_do_it_for_all_matching
-        call    pysx_check_collisions
 
         ret

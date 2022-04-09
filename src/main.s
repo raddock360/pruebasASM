@@ -31,9 +31,20 @@ _main::
    call  man_init_entity
    
    call  man_create_entity ;; Creamos entidad enemigo
-   ld    hl, #ent_enemy
+   ld    hl, #ent_enemy0
    ld    bc, #ent_size
    call  man_init_entity
+
+   call  man_create_entity ;; Creamos entidad enemigo
+   ld    hl, #ent_enemy1
+   ld    bc, #ent_size
+   call  man_init_entity
+   
+   call  man_create_entity ;; Creamos entidad enemigo
+   ld    hl, #ent_enemy2
+   ld    bc, #ent_size
+   call  man_init_entity
+
 
    ;; Loop forever
 loop:

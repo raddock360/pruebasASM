@@ -1,5 +1,7 @@
 .globl ent_player
-.globl ent_enemy
+.globl ent_enemy0
+.globl ent_enemy1
+.globl ent_enemy2
 
 ;;
 ;; Tamaño de una entidad en bytes.

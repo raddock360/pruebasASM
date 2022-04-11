@@ -21,6 +21,8 @@ man_max_entities = 10
         .db 0x00, 0x00
         .db 0x00, 0x00
         .db 0x00
+        .db 0x00
+        .db 0x00
         .dw 0xFFFF
 .endm
 
@@ -37,13 +39,15 @@ man_max_entities = 10
 ;; - Byte de estados ----------     |    |     |     |     |    |    |      |
 ;; - Nombre -----------       |     |    |     |     |     |    |    |      |         
 ;;                    |       |     |    |     |     |     |    |    |      |
-.macro DefineEntity _name, _estat, _ex, _ey, _evx, _evy, _ew, _eh, _ecol, _eptr
+.macro DefineEntity _name, _estat, _ex, _ey, _evx, _evy, _ew, _eh, _ecol, _extarget, _eytarget, _eptr
     _name:
         .db _estat
         .db _ex, _ey 
         .db _evx, _evy
         .db _ew, _eh 
         .db _ecol
+        .db _extarget
+        .db _eytarget
         .dw _eptr
 .endm
 

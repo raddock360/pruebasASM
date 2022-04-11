@@ -16,7 +16,7 @@ DefineEntityVector man_entity_vector, man_max_entities
 ;;
 man_create_entity::
         ld      de, (man_next_free_entity)
-        ld      hl, #ent_size
+        ld      hl, #sizeof_entity
         add     hl, de
         ld      (man_next_free_entity), hl
         ld      hl, #man_created_entities
@@ -90,7 +90,7 @@ return:
         djnz    nextEntity                 ; Decrementamos BC y si no es CERO, pasamos a la siguiente entidad
         ret                                ; Si es CERO, volvemos.
 nextEntity:                                ; Siguiente entidad del vector
-        ld      de, #ent_size              ; DE -> Tamaño de una entidad en bytes
+        ld      de, #sizeof_entity              ; DE -> Tamaño de una entidad en bytes
         add     ix, de                     ; Se lo sumamos a IX para movernos a la siguiente entidad
         jr      again                      ; Repetimos el proceso.
 

@@ -27,22 +27,22 @@ _main::
    
    call  man_create_entity ;; Creamos entidad del jugador
    ld    hl, #ent_player
-   ld    bc, #ent_size
+   ld    bc, #sizeof_entity
    call  man_init_entity
    
    call  man_create_entity ;; Creamos entidad enemigo
    ld    hl, #ent_enemy0
-   ld    bc, #ent_size
+   ld    bc, #sizeof_entity
    call  man_init_entity
 
    call  man_create_entity ;; Creamos entidad enemigo
    ld    hl, #ent_enemy1
-   ld    bc, #ent_size
+   ld    bc, #sizeof_entity
    call  man_init_entity
    
    call  man_create_entity ;; Creamos entidad enemigo
    ld    hl, #ent_enemy2
-   ld    bc, #ent_size
+   ld    bc, #sizeof_entity
    call  man_init_entity
 
 

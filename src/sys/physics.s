@@ -48,55 +48,6 @@ a_not_pressed:
         ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Comprueba si la entidad jugador colisiona con alguna entidad enemiga o 
-;; elemento colisionable.
-;; INPUT: 
-;; OUTPUT:
-;; DESTROY:
-;;
-pysx_check_collisions::
-;; Apuntamos IX a la entidad del jugador (la primera del vector)
-;; Apuntamos IY a la segunda entidad del vector
-        ld      ix, #man_entity_vector   ; IX = puntero a la primera entidad del vector
-        ld      iy, #man_entity_vector   ; IY = puntero a la primera entidad del vector
-        ld      de, #ent_size            ; DE = tamaño de una entidad en bytes
-        add     iy, de                   ; IY += DE (sumamos DE a IY para avanzar el puntero hasta la segunda entidad)
-        call    man_get_created_entities ; Obtenemos el número de entidades en el vector
-        dec     b                        ; y lo decrementamos en uno para la cuenta
-comprobar_colisiones:
-        ld      a, entity_y(iy)          ; A = posición Y de la esquina sup-izda de la entidad enemiga
-        add     entity_h(iy)             ; A += entity_h. Sumamos la altura para calcular donde empieza la parte inferior de la entidad
-        ld      c, a                     ; B = A (pasamos el valor de A a B)
-        ld      a, entity_y(ix)          ; A = posición Y de la esquina sup-izda del jugador
-        cp      c                        ; 
-        jr      nc, next_entity          ; Si no, pasamos a la siguiente entidad
-possible_y_collision:
-        ld      a, entity_y(ix)          ; A = posición Y de la esquina sup-izda del personaje
-        add     entity_h(ix)             ; A += entity_h
-        cp      entity_y(iy)             ; Si A <= enemy_y + enemy_h hay colisión
-        jr      c, next_entity           ; Si no, no la hay
-there_is_y_collision:
-        ld      a, entity_x(iy)
-        add     entity_w(iy)
-        ld      c, a
-        ld      a, entity_x(ix)
-        cp      c
-        jr      nc, next_entity
-is_there_x_collision:
-        ld      a, entity_x(ix)
-        add     entity_w(ix)
-        cp      entity_x(iy)
-        jr      c, next_entity
-collision_confirmed:
-                ld      entity_vx(ix), #0
-                ld      entity_vy(ix), #0
-next_entity:
-        dec     b
-        ret     z 
-        add     iy, de 
-        jr      comprobar_colisiones
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Actualiza las físicas de una entidad. Para ello, comprueba que no ha llegado a 
 ;; los límites de la pantalla. Si ha llegado, no permite el paso.
 ;; INPUT: IX -> Puntero a la entidad

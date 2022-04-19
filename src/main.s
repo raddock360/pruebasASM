@@ -4,6 +4,7 @@
 .include "entities/entities.h.s"
 .include "sys/render.h.s"
 .include "sys/physics.h.s"
+.include "sys/sys_ia.h.s"
 
 ;;
 ;; Start of _DATA area 
@@ -24,6 +25,7 @@
 ;;
 _main::
    call  cpct_disableFirmware_asm
+   call  sys_ia_init
    
    call  man_create_entity ;; Creamos entidad del jugador
    ld    hl, #ent_player
@@ -48,6 +50,7 @@ _main::
 
    ;; Loop forever
 loop:
+   call  sys_ia_update
    call  pysx_update_all_entities
    call  ren_do_it_for_all
    

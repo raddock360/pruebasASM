@@ -47,11 +47,21 @@ _main::
    ld    bc, #sizeof_entity
    call  man_init_entity
 
+   ld    a, #50
+   ld    (counter), a
 
    ;; Loop forever
 loop:
-   call  sys_ia_update
    call  pysx_update_all_entities
+counter = . + 1
+   ld     a, #0x00
+   dec    a
+   ld    (counter), a
+   jr    nz, render   
+   call  sys_ia_update
+   ld     a, #50
+   ld    (counter), a
+render:
    call  ren_do_it_for_all
    
    call cpct_waitVSYNC_asm
